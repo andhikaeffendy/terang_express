@@ -4,6 +4,8 @@ import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:intro_slider/scrollbar_behavior_enum.dart';
 import 'package:intro_slider/dot_animation_enum.dart';
+import 'package:terang_express/globals/session.dart';
+import 'package:terang_express/globals/variable.dart';
 import 'package:terang_express/login.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -39,10 +41,9 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 
-  void onDonePress() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => Login()),
-    );
+  void onDonePress() async {
+    await introFinish();
+    startNewPage(context, Login());
   }
 
   void onTabChangeCompleted(index) {

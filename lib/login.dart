@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:terang_express/apis/api_login.dart';
 import 'package:terang_express/forgot_password.dart';
+import 'package:terang_express/globals/session.dart';
+import 'package:terang_express/globals/variable.dart';
 import 'package:terang_express/main.dart';
 import 'package:terang_express/register.dart';
 import 'package:terang_express/splash_screen.dart';
@@ -19,8 +22,14 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+
+  final usernameEditTextController = TextEditingController();
+  final passwordEditTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    usernameEditTextController.text = "mreza";
+    passwordEditTextController.text = "mreza123";
     return Scaffold(
       body: Stack(
         children: [
@@ -76,6 +85,7 @@ class _LoginState extends State<Login> {
                           hintColor: Colors.white
                       ),
                       child: new TextField(
+                        controller: usernameEditTextController,
                         decoration: new InputDecoration(
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white, width: 2),
@@ -86,7 +96,7 @@ class _LoginState extends State<Login> {
 
                             border: new OutlineInputBorder(
                                 borderSide: new BorderSide(color: Colors.white)),
-                            labelText: 'Email',
+                            labelText: 'Username',
                             fillColor: Colors.white,
                             prefixIcon: const Icon(
                               Icons.person,
@@ -108,6 +118,7 @@ class _LoginState extends State<Login> {
                           hintColor: Colors.white
                       ),
                       child: new TextField(
+                        controller: passwordEditTextController,
                         decoration: new InputDecoration(
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white, width: 2),
@@ -138,10 +149,18 @@ class _LoginState extends State<Login> {
                         color: Colors.white,
                         padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
                         onPressed: (){
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => MyApp()),
-                          );
+                          showCircular(context);
+                          futureApiLogin(usernameEditTextController.text, passwordEditTextController.text)
+                              .then((value){
+                                closeCircular(context);
+                                if(value.isSuccess()){
+                                  currentUser = value.user;
+                                  saveSession();
+                                  startNewPage(context, MyApp());
+                                } else {
+                                  alertDialog(context, "Failed", value.message);
+                                }
+                          });
                         },
                         child: Text(
                           'Sign In',
@@ -159,12 +178,7 @@ class _LoginState extends State<Login> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: (){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Register()),
-                            );
-                          },
+                          onTap: () => nextPage(context, Register()),
                           child: Text(
                             'Sign Up',
                             style: TextStyle(
@@ -182,12 +196,7 @@ class _LoginState extends State<Login> {
                             fontWeight: FontWeight.bold
                         ),
                         ),GestureDetector(
-                          onTap: (){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => ForgotPassword()),
-                            );
-                          },
+                          onTap: ()=> nextPage(context, ForgotPassword()),
                           child: Text(
                             'Forgot Password',
                             style: TextStyle(

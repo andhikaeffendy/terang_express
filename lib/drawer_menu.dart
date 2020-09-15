@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:terang_express/apis/api_logout.dart';
+import 'package:terang_express/globals/session.dart';
+import 'package:terang_express/globals/variable.dart';
+import 'package:terang_express/login.dart';
 import 'package:terang_express/routes.dart';
 
 class DrawerMenu extends StatelessWidget {
@@ -53,7 +57,15 @@ class DrawerMenu extends StatelessWidget {
             leading: Icon(Icons.exit_to_app),
             title: Text(
                 'Sign Out'
-            ),
+            ),onTap: (){
+              showCircular(context);
+              futureApiLogout(currentUser.token).then((value){
+                closeCircular(context);
+                currentUser = null;
+                destroySession();
+                startNewPage(context, Login());
+            });
+          },
           ),
         ],
       ),

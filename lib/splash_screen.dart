@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:terang_express/globals/session.dart';
+import 'package:terang_express/globals/variable.dart';
 import 'package:terang_express/home.dart';
 import 'package:terang_express/introduction_screen.dart';
 import 'package:terang_express/login.dart';
@@ -17,36 +17,16 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState(){
     super.initState();
 
-    _checkSession().then(
-        (status){
-          if ((status)) {
-            _navigationToHome();
-          }  else{
-            _navigationToLogin();
-          }
-        }
-    );
+    checkSession();
   }
 
-  _navigationToLogin(){
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-            builder: (BuildContext context) => IntroScreen()
-        )
-    );
+  delay(int second) async {
+    await Future.delayed(Duration(seconds: second), (){});
   }
 
-  Future<bool> _checkSession() async {
-    await Future.delayed(Duration(seconds: 3), (){});
-    return false;
-  }
-
-  void _navigationToHome(){
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (BuildContext context) => Home()
-      )
-    );
+  checkSession() async {
+    await delay(3);
+    startNewPage(context, await loadSession() ? Home() : await skipIntro() ? Login() : IntroScreen());
   }
 
   @override
