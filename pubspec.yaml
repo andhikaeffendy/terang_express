@@ -32,10 +32,18 @@ dependencies:
   flutter_datetime_picker: ^1.4.0
   flutter_switch: ^0.1.1
   google_maps_flutter: ^0.5.32
+  shimmer: ^1.1.1
+  intro_slider: ^2.3.3
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path: "assets/logo_small.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -53,6 +61,10 @@ flutter:
     - assets/logo_small.png
     - assets/button_deliver.png
     - dropbox_logo.png
+    - assets/landing_page.jpeg
+    - assets/intro1.jpeg
+    - assets/intro2.jpg
+    - assets/intro3.jpg
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

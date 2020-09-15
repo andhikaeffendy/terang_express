@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:terang_express/forgot_password.dart';
 import 'package:terang_express/main.dart';
 import 'package:terang_express/register.dart';
+import 'package:terang_express/splash_screen.dart';
 
 class StartApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Login(),
+      home: SplashScreen(),
     );
   }
 }

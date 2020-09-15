@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:terang_express/drawer_menu.dart';
+import 'package:terang_express/edit_password.dart';
 
 class Profil extends StatefulWidget {
 
@@ -158,6 +159,25 @@ class _ProfilState extends State<Profil> {
                       ),
                     ),SizedBox(
                       height: 24.0,
+                    ),ButtonTheme(
+                      minWidth: double.infinity,
+                      child: FlatButton(
+                        color: Color(0xFFa20000),
+                        padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => EditPassword()),
+                          );
+                        },
+                        child: Text(
+                          'Edit Password',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0),
+                        ),
+                      ),
                     )
                   ],
                 ),
