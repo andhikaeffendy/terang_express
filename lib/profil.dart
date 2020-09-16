@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:terang_express/apis/api_profile.dart';
 import 'package:terang_express/drawer_menu.dart';
 import 'package:terang_express/edit_password.dart';
+import 'package:terang_express/globals/variable.dart';
+import 'package:terang_express/models/profile.dart';
 
 class Profil extends StatefulWidget {
 
@@ -11,6 +14,8 @@ class Profil extends StatefulWidget {
 }
 
 class _ProfilState extends State<Profil> {
+  Profile profile = new Profile("-", "-", "-", "-", "-", "-", "-");
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +57,7 @@ class _ProfilState extends State<Profil> {
                       backgroundColor: Colors.white,
                       child: CircleAvatar(
                         radius: 53,
-                        backgroundImage: NetworkImage('https://assets.pikiran-rakyat.com/crop/0x0:0x0/x/photo/2020/06/14/314730607.jpg'),
+                        backgroundImage: NetworkImage(domain+currentUser.photoUrl),
                       ),
                     ),SizedBox(
                       height: 16.0,
@@ -74,88 +79,18 @@ class _ProfilState extends State<Profil> {
                             topLeft: Radius.circular(25.0),
                             bottomRight: Radius.circular(25.0)),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'First Name',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16.0,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8.0,
-                          ),Text(
-                            'Andhika',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16.0,
-                          ),Text(
-                            'Company Name',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16.0,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8.0,
-                          ),Text(
-                            'PT Wiradipa Nusantara',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16.0,
-                          ),Text(
-                            'Email',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16.0,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8.0,
-                          ),Text(
-                            'Andhikaeffendy14@gmail.com',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16.0,
-                          ),Text(
-                            'Nomor Telepon',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16.0,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8.0,
-                          ),Text(
-                            '082198113362',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16.0,
-                          ),
-                        ],
+                      child: FutureBuilder(
+                        future: futureApiProfile(currentUser.token),
+                        builder: (context, future){
+                          if(future.connectionState == ConnectionState.done){
+                            profile = future.data;
+                            return profileView();
+                          } else {
+                            return Center(
+                              child: new CircularProgressIndicator(),
+                            );
+                          }
+                        },
                       ),
                     ),SizedBox(
                       height: 24.0,
@@ -186,6 +121,92 @@ class _ProfilState extends State<Profil> {
           ],
         ),
       ),
+    );
+  }
+
+  profileView(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'Name',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16.0,
+          ),
+        ),
+        SizedBox(
+          height: 8.0,
+        ),Text(
+          profile.name,
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold
+          ),
+        ),
+        SizedBox(
+          height: 16.0,
+        ),Text(
+          'Company Name',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16.0,
+          ),
+        ),
+        SizedBox(
+          height: 8.0,
+        ),Text(
+          profile.companyName,
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold
+          ),
+        ),
+        SizedBox(
+          height: 16.0,
+        ),Text(
+          'Email',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16.0,
+          ),
+        ),
+        SizedBox(
+          height: 8.0,
+        ),Text(
+          profile.email,
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold
+          ),
+        ),
+        SizedBox(
+          height: 16.0,
+        ),Text(
+          'Nomor Telepon',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16.0,
+          ),
+        ),
+        SizedBox(
+          height: 8.0,
+        ),Text(
+          profile.hp,
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold
+          ),
+        ),
+        SizedBox(
+          height: 16.0,
+        ),
+      ],
     );
   }
 }

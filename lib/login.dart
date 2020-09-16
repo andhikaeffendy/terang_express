@@ -118,6 +118,7 @@ class _LoginState extends State<Login> {
                           hintColor: Colors.white
                       ),
                       child: new TextField(
+                        obscureText: true,
                         controller: passwordEditTextController,
                         decoration: new InputDecoration(
                             focusedBorder: OutlineInputBorder(

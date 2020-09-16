@@ -12,12 +12,12 @@ class DrawerMenu extends StatelessWidget {
       child: Column(
         children: <Widget> [
           UserAccountsDrawerHeader(
-            accountEmail: Text('andhikaeffendy14@gmail.com'),
+            accountEmail: Text(currentUser.email),
             accountName: Text(
-              'Andhika Effendy'
+              currentUser.name
             ),
             currentAccountPicture: CircleAvatar(
-              child: Image.network('https://assets.pikiran-rakyat.com/crop/0x0:0x0/x/photo/2020/06/14/314730607.jpg'),
+              child: Image.network(domain+currentUser.photoUrl),
             ),
           ),
           ListTile(

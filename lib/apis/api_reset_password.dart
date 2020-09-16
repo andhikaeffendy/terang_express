@@ -2,11 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:terang_express/globals/variable.dart';
 import 'package:terang_express/models/api_response.dart';
 
-Future<ApiResponse> futureApiLogout(String token) async{
+Future<ApiResponse> futureApiResetPassword(String email) async{
   var dio = Dio();
-  String url = apiUrl + "users/sign_out";
+  String url = apiUrl + "users/forgot_password";
   FormData formData = new FormData.fromMap({
-    "auth_token": token,
+    "email": email,
   });
   Response response = await dio.post(url, data: formData);
   print(response.data);

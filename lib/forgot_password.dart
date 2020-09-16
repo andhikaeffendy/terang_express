@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:terang_express/apis/api_reset_password.dart';
+import 'package:terang_express/globals/variable.dart';
 import 'package:terang_express/login.dart';
 import 'package:terang_express/register.dart';
 
@@ -8,6 +10,8 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
+  final emailController = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +51,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           accentColor: Colors.white,
                           hintColor: Colors.white),
                       child: new TextField(
+                        controller: emailController,
                         decoration: new InputDecoration(
                             focusedBorder: OutlineInputBorder(
                               borderSide:
@@ -78,10 +83,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         color: Colors.white,
                         padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
                         onPressed: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => MyApp()),
-                          // );
+                          showCircular(context);
+                          futureApiResetPassword(emailController.text).then((value){
+                            closeCircular(context);
+                            if(value.isSuccess()){
+                              alertDialogOK(context, value.status, value.message);
+                            } else alertDialog(context, "error", value.message);
+                          });
                         },
                         child: Text(
                           'Kirimkan Intruksi Reset Password',
@@ -98,12 +106,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: (){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Login()),
-                            );
-                          },
+                          onTap: () => startNewPage(context, Login()),
                           child: Text(
                             'Sign In',
                             style: TextStyle(
@@ -121,12 +124,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               fontWeight: FontWeight.bold
                           ),
                         ),GestureDetector(
-                          onTap: (){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Register()),
-                            );
-                          },
+                          onTap: ()=> startNewPage(context, Register()),
                           child: Text(
                             'Register',
                             style: TextStyle(

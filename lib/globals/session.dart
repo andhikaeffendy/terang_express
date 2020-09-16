@@ -19,7 +19,7 @@ introFinish() async {
 
 saveSession() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setString(Preference.prefUSER, currentUser.toString());
+  prefs.setString(Preference.prefUSER, currentUser.toStringJson());
 }
 
 loadSession() async {

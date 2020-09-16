@@ -31,6 +31,25 @@ alertDialog(context, title, message){
   );
 }
 
+Future<bool> alertDialogOK(context, title, message) async {
+  bool result = await showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("OK"),
+              onPressed:  () => Navigator.of(context, rootNavigator: true).pop(true),
+            ),
+          ],
+        );
+      }
+  );
+  return result;
+}
+
 nextPage(context, page){
   Navigator.push(
     context,

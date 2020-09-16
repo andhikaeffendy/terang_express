@@ -36,4 +36,6 @@ class User{
     "token": token,
     "photo_url": photoUrl,
   };
+
+  String toStringJson() => json.encode(toJson());
 }
