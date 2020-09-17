@@ -1,9 +1,18 @@
+import 'package:contact_picker/contact_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:geocoder/geocoder.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:terang_express/form_shipping.dart';
+import 'package:terang_express/globals/order_data.dart';
+import 'package:terang_express/globals/variable.dart';
+import 'package:terang_express/helpers/district_search.dart';
 import 'package:terang_express/introduction_screen.dart';
 import 'package:terang_express/mapsview.dart';
+import 'package:terang_express/models/district.dart';
+import 'package:terang_express/models/order.dart';
 
 class OrderForm extends StatefulWidget {
   @override
@@ -11,9 +20,24 @@ class OrderForm extends StatefulWidget {
 }
 
 class _OrderFormState extends State<OrderForm> {
+  DateTime now = DateTime.now();
   DateTime selectedDate = DateTime.now();
   String _date = "Input Tanggal Pickup";
   bool status1 = false;
+  DateTime min = DateTime.now();
+  DateTime max = DateTime.now().add(new Duration(days: 30));
+
+  final ContactPicker _contactPicker = new ContactPicker();
+  District _district;
+
+  Address pickupAddress;
+
+  var addressController = new TextEditingController();
+  var senderController = new TextEditingController();
+  var phoneController = new TextEditingController();
+  var districtController = new TextEditingController();
+  var labelController = new TextEditingController();
+  var noteController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +68,21 @@ class _OrderFormState extends State<OrderForm> {
             children: [
               RaisedButton(
                 onPressed: () {
+                  if(now.hour > 13)
+                    min = min.add(new Duration(days: 1));
                   DatePicker.showDatePicker(context,
                       theme: DatePickerTheme(
                         containerHeight: 210.0,
                       ),
                       showTitleActions: true,
-                      minTime: DateTime(2000, 1, 1),
-                      maxTime: DateTime(2022, 12, 31), onConfirm: (date) {
+                      minTime: min,
+                      maxTime: max, onConfirm: (date) {
                     print('confirm $date');
                     _date = '${date.year} - ${date.month} - ${date.day}';
-                    setState(() {});
-                  }, currentTime: DateTime.now(), locale: LocaleType.en);
+                    setState(() {
+
+                    });
+                  }, currentTime: min, locale: LocaleType.en);
                 },
                 child: Container(
                   alignment: Alignment.center,
@@ -99,11 +127,17 @@ class _OrderFormState extends State<OrderForm> {
               SizedBox(
                 height: 16.0,
               ),GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MapsView()),
-                  );
+                onTap: () async {
+                  if(await Permission.location.isGranted) {
+                    pickupAddress = await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>
+                          MapsView(pickupAddress)),
+                    );
+                    setState(() {
+                      addressController.text = pickupAddress.addressLine;
+                    });
+                  }
                 },
                 child: Container(
                   padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
@@ -138,6 +172,7 @@ class _OrderFormState extends State<OrderForm> {
                     accentColor: Color(0xFFa20000),
                     hintColor: Color(0xFFa20000)),
                 child: new TextField(
+                  controller: addressController,
                   decoration: new InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide:
@@ -168,6 +203,19 @@ class _OrderFormState extends State<OrderForm> {
                     accentColor: Color(0xFFa20000),
                     hintColor: Color(0xFFa20000)),
                 child: new TextField(
+                  controller: districtController,
+                  onTap: () async {
+                    // generate a new token here
+                    final District district = await showSearch(
+                      context: context,
+                      delegate: DistrictSearch(),
+                    );
+                    // This will change the text displayed in the TextField
+                    if (district != null) {
+                      _district = district;
+                      districtController.text = _district.name;
+                    }
+                  },
                   decoration: new InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide:
@@ -198,6 +246,7 @@ class _OrderFormState extends State<OrderForm> {
                     accentColor: Color(0xFFa20000),
                     hintColor: Color(0xFFa20000)),
                 child: new TextField(
+                  controller: senderController,
                   decoration: new InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide:
@@ -216,7 +265,16 @@ class _OrderFormState extends State<OrderForm> {
                         color: Color(0xFFa20000),
                       ),
                       suffixIcon: IconButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          if(await Permission.contacts.isGranted) {
+                            Contact contact = await _contactPicker
+                                .selectContact();
+                            setState(() {
+                              senderController.text = contact.fullName;
+                              phoneController.text = contact.phoneNumber.number;
+                            });
+                          }
+                        },
                         icon: Icon(
                           Icons.contact_phone,
                           color: Color(0xFFa20000),
@@ -235,6 +293,7 @@ class _OrderFormState extends State<OrderForm> {
                     accentColor: Color(0xFFa20000),
                     hintColor: Color(0xFFa20000)),
                 child: new TextField(
+                  controller: phoneController,
                   decoration: new InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide:
@@ -265,6 +324,7 @@ class _OrderFormState extends State<OrderForm> {
                     accentColor: Color(0xFFa20000),
                     hintColor: Color(0xFFa20000)),
                 child: new TextField(
+                  controller: noteController,
                   decoration: new InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide:
@@ -318,6 +378,7 @@ class _OrderFormState extends State<OrderForm> {
                     accentColor: Color(0xFFa20000),
                     hintColor: Color(0xFFa20000)),
                 child: new TextField(
+                  controller: labelController,
                   decoration: new InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide:
@@ -348,10 +409,8 @@ class _OrderFormState extends State<OrderForm> {
                   color: Color(0xFFa20000),
                   padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => FormShipping()),
-                    );
+                    if(assignValue())
+                      nextPage(context, FormShipping());
                   },
                   child: Text(
                     'Selanjutnya',
@@ -367,5 +426,44 @@ class _OrderFormState extends State<OrderForm> {
         ),
       ),
     );
+  }
+
+  bool assignValue(){
+    if(pickupAddress == null || _date.compareTo("Input Tanggal Pickup") == 0 ||
+        _date == "" || _district == null ) {
+      alertDialogOK(context, "Error", "Data Belum Lengkap");
+      return false;
+    }
+    if(orderData == null){
+      orderData = new Order(
+          _date,
+          "",
+          noteController.text,
+          0,
+          addressController.text,
+          0,
+          _district.districtId,
+          0,
+          pickupAddress.coordinates.latitude,
+          pickupAddress.coordinates.longitude,
+          0,
+          _district.areaId,
+          senderController.text,
+          phoneController.text,
+          status1 ? 1 : 0,
+          labelController.text
+      );
+      return true;
+    }
+    orderData.pickupLatitude = pickupAddress.coordinates.latitude;
+    orderData.pickupLongitude = pickupAddress.coordinates.longitude;
+    orderData.orderDate = _date;
+    orderData.pickupAddress = addressController.text;
+    orderData.pickupDistrictId = _district.districtId;
+    orderData.senderName = senderController.text;
+    orderData.senderPhone = phoneController.text;
+    orderData.saveAddress = status1 ? 1 : 0;
+    orderData.labelAddress = labelController.text;
+    return true;
   }
 }

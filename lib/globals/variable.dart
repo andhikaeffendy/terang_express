@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:terang_express/models/district.dart';
 import 'package:terang_express/models/user.dart';
 
 String domain = "https://wipick.wiradipa.com";
 String apiUrl = domain+"/api/";
 
 User currentUser;
+List<District> districts = new List();
 
 showCircular(context){
   showDialog(

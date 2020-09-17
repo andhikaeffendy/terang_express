@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:terang_express/apis/api_districts.dart';
 import 'package:terang_express/drawer_menu.dart';
+import 'package:terang_express/globals/variable.dart';
 import 'package:terang_express/my_order.dart';
 import 'package:terang_express/order_form.dart';
 
@@ -12,6 +14,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    if(districts.length == 0){
+      futureApiDistricts(currentUser.token).then((value){
+        if(value.isSuccess())districts = value.districts;
+      });
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,12 +53,7 @@ class _HomeState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 InkWell(
-                  onTap: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => OrderForm()),
-                    );
-                  },
+                  onTap: () => nextPage(context, OrderForm()),
                   child: Image.asset('assets/button_deliver.png', fit: BoxFit.fill, width: 250.0),
                 ),
                 SizedBox(
@@ -76,12 +84,7 @@ class _HomeState extends State<Home> {
                   child: FlatButton(
                     padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
                     color: Color(0xFFa20000),
-                    onPressed: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyOrder()),
-                      );
-                    },
+                    onPressed: ()=>nextPage(context, MyOrder()),
                     child: Text(
                       'MY ORDER',
                       style: TextStyle(
