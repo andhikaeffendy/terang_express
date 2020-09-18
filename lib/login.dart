@@ -28,8 +28,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    usernameEditTextController.text = "mreza";
-    passwordEditTextController.text = "mreza123";
+//    usernameEditTextController.text = "mreza";
+//    passwordEditTextController.text = "mreza123";
     return Scaffold(
       body: Stack(
         children: [

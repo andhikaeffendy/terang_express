@@ -3,6 +3,15 @@ import 'dart:convert';
 import 'package:terang_express/models/order_item.dart';
 
 class Order{
+  // get
+  int id;
+  String orderNumber;
+  String customerName;
+  String pickerName;
+  double value;
+  int shippingCount;
+
+  // post
   String orderDate;
   String description;
   String note;
@@ -59,6 +68,19 @@ class Order{
     saveAddress = 0,
     labelAddress = "";
 
+  Order.fromJson(Map<String, dynamic> json) :
+        id = json["id"],
+        orderDate = json["order_date"],
+        orderNumber = json["order_number"],
+        customerName = json["customer_name"],
+        pickerName = json["picker_name"],
+        estimationValue = double.parse(json["estimation_value"].toString()),
+        value = double.parse(json["value"].toString()),
+        shippingCount = json["shipping_count"],
+        pickupAddress = json["address"],
+        pickupLatitude = double.parse(json["latitude"]),
+        pickupLongitude = double.parse(json["longitude"]);
+
   Map<String, dynamic> toJson() => {
     "order_date": orderDate,
     "description": description,
@@ -80,4 +102,13 @@ class Order{
   };
 
   String toStringJson() => json.encode(toJson());
+
+  recalculateValue(){
+    if(orderItems == null) return ;
+    double total = 0;
+    orderItems.forEach((orderItem) {
+      total += orderItem.receiverEstimationValue;
+    });
+    estimationValue = total;
+  }
 }

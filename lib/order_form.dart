@@ -68,7 +68,7 @@ class _OrderFormState extends State<OrderForm> {
             children: [
               RaisedButton(
                 onPressed: () {
-                  if(now.hour > 13)
+                  if(now.hour > 12)
                     min = min.add(new Duration(days: 1));
                   DatePicker.showDatePicker(context,
                       theme: DatePickerTheme(
@@ -453,6 +453,7 @@ class _OrderFormState extends State<OrderForm> {
           status1 ? 1 : 0,
           labelController.text
       );
+      orderData.orderItems = new List();
       return true;
     }
     orderData.pickupLatitude = pickupAddress.coordinates.latitude;
@@ -464,6 +465,31 @@ class _OrderFormState extends State<OrderForm> {
     orderData.senderPhone = phoneController.text;
     orderData.saveAddress = status1 ? 1 : 0;
     orderData.labelAddress = labelController.text;
+    orderData.orderItems = new List();
     return true;
   }
+
+//  bool assignValueDummy(){
+//      orderData = new Order(
+//          "2020-09-18",
+//          "",
+//          "Jangan Dibuang",
+//          0,
+//          "Jl Kenangan",
+//          0,
+//          _district.districtId,
+//          0,
+//          -6.932694,
+//          107.627449,
+//          0,
+//          _district.areaId,
+//          "Bambang",
+//          "098472863844",
+//          status1 ? 1 : 0,
+//          "Asal",
+//      );
+//      orderData.orderItems = new List();
+//      return true;
+//
+//  }
 }

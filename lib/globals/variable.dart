@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:terang_express/models/district.dart';
 import 'package:terang_express/models/user.dart';
+import 'package:intl/intl.dart';
 
 String domain = "https://wipick.wiradipa.com";
 String apiUrl = domain+"/api/";
@@ -65,4 +66,9 @@ startNewPage(context, page){
       new MaterialPageRoute(
         builder: (context) => page,
       ), (route) => false);
+}
+
+String getCurrency(money){
+  var currency = new NumberFormat("###,###,###.#");
+  return "Rp "+currency.format(money);
 }

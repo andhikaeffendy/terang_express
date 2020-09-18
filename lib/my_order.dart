@@ -1,5 +1,8 @@
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:terang_express/apis/api_get_orders.dart';
+import 'package:terang_express/globals/variable.dart';
+import 'package:terang_express/models/order.dart';
 
 class MyOrder extends StatefulWidget {
   @override
@@ -15,8 +18,18 @@ class Post {
 
 class _MyOrderState extends State<MyOrder> {
 
-  List<String> litems = ["1", "2", "Third", "4"];
+  static List<Order> mainData;
+  List<Order> orders = List.from(mainData);
+  final searchController = new TextEditingController();
 
+  Future<ApiOrder> _future;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _future = futureApiGetOrders(currentUser.token);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +60,13 @@ class _MyOrderState extends State<MyOrder> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   TextField(
+                    controller: searchController,
+                    onChanged: (text) => searchOrder(text),
                     decoration: InputDecoration(
                       hintText: "Search",
                       suffixIcon: IconButton(
                         onPressed: (){
-
+                          searchOrder(searchController.text);
                         },
                         icon: Icon(Icons.search),
                       ),
@@ -61,17 +76,31 @@ class _MyOrderState extends State<MyOrder> {
                     height: 8.0,
                   ),
                   Expanded(
-                    child: ListView.builder(
-                        itemCount: litems.length,
-                        shrinkWrap: true,
-                        primary: false,
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemBuilder: (BuildContext context, int index) {
-                          return ListTile(
-                            title: Text('Judul'),
-                            subtitle: Text('nama perusahaan'),
+                    child: FutureBuilder(
+                      future: _future,
+                      builder: (context, snapshot){
+                        if(snapshot.connectionState == ConnectionState.done){
+                          ApiOrder apiOrder = snapshot.data;
+                          if(!apiOrder.isSuccess()) return Container();
+                          mainData = apiOrder.orders;
+                          return ListView.builder(
+                              itemCount: orders.length,
+                              shrinkWrap: true,
+                              primary: false,
+                              physics: AlwaysScrollableScrollPhysics(),
+                              itemBuilder: (BuildContext context, int index) {
+                                return ListTile(
+                                  title: Text(orders[index].orderNumber),
+                                  subtitle: Text(orders[index].orderDate),
+                                );
+                              });
+                        } else {
+                          return new Center(
+                            child: new CircularProgressIndicator(),
                           );
-                        }),
+                        }
+                      },
+                    ),
                   )
                 ],
               ),
@@ -79,5 +108,11 @@ class _MyOrderState extends State<MyOrder> {
           ],
         ),
     );
+  }
+
+  searchOrder(query){
+    setState(() {
+      orders = mainData.where((element) => element.orderNumber.contains(query) || element.orderDate.contains(query) ).toList();
+    });
   }
 }

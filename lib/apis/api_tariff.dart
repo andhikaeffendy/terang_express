@@ -35,9 +35,9 @@ class ApiTariff {
   ApiTariff.fromJson(Map<String, dynamic> json) :
         status = json["status"],
         message = json["message"],
-        tariff_1 = json["tariff_1"],
-        tariff_2 = json["tariff_2"],
-        tariff_3 = json["tariff_3"];
+        tariff_1 = double.parse(json["tariff_1"].toString()),
+        tariff_2 = double.parse(json["tariff_2"].toString()),
+        tariff_3 = double.parse(json["tariff_3"].toString());
 
   ApiTariff.fromStringJson(String stringJson) :
         this.fromJson(json.decode(stringJson));

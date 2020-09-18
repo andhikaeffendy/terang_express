@@ -314,8 +314,16 @@ class _FormShippingState extends State<FormShipping> {
                 color: Color(0xFFa20000),
                 padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
                 onPressed: () async {
-                  if(await assignValue())
-                  nextPage(context, ItemOrder());
+                  OrderItem orderItem = await assignValue();
+                  if(orderItem != null){
+                    if(readyToSubmit){
+                      Navigator.of(context, rootNavigator: true).pop(orderItem);
+                    } else {
+                      orderData.orderItems.add(orderItem);
+                      orderData.recalculateValue();
+                      nextPage(context, ItemOrder());
+                    }
+                  }
                 },
                 child: Text(
                   'Selesai',
@@ -334,43 +342,53 @@ class _FormShippingState extends State<FormShipping> {
     );
   }
 
-  Future<bool> assignValue() async {
+  Future<OrderItem> assignValue() async {
     if(dropAddress == null || _district == null ) {
       alertDialogOK(context, "Error", "Data Belum Lengkap");
-      return false;
+      return null;
     }
-    if(orderItemData == null){
-      orderItemData = new OrderItem(
-          dropAddress.coordinates.longitude,
-          dropAddress.coordinates.longitude,
-          addressController.text,
-          receiverController.text,
-          phoneController.text,
-          selectRadioBtn,
-          0,
-          _district.districtId,
-          0,
-          0,
-          _district.areaId
-      );
-    } else {
-      orderItemData.dropLatitude = dropAddress.coordinates.longitude;
-      orderItemData.dropLongitude = dropAddress.coordinates.longitude;
-      orderItemData.dropAddress = addressController.text;
-      orderItemData.receiverName = receiverController.text;
-      orderItemData.receiverPhone = phoneController.text;
-      orderItemData.goodSizeId = selectRadioBtn;
-      orderItemData.receiverDistrictId = _district.districtId;
-      orderItemData.receiverAreaId = _district.areaId;
-    }
+    OrderItem orderItemData = new OrderItem(
+      dropAddress.coordinates.longitude,
+      dropAddress.coordinates.longitude,
+      addressController.text,
+      receiverController.text,
+      phoneController.text,
+      selectRadioBtn,
+      0,
+      _district.districtId,
+      0,
+      0,
+      _district.areaId,
+      _district.name,
+    );
     ApiTariff apiTariff = await futureApiTariff(currentUser.token, orderData.pickupAreaId, orderItemData.receiverAreaId);
     if(apiTariff.isSuccess()){
       orderItemData.receiverEstimationValue = apiTariff.getTariff(orderItemData.goodSizeId);
-      orderData.estimationValue = orderItemData.receiverEstimationValue;
-      orderData.orderItems = new List();
-      orderData.orderItems.add(orderItemData);
-      return true;
+      return orderItemData;
     }
-    return false;
+    return null;
   }
+
+//  Future<OrderItem> assignValueDummy() async {
+//    OrderItem orderItemData = new OrderItem(
+//      -6.932694,
+//      107.627449,
+//      "Jalan Bangau",
+//      "Bangau Beracun",
+//      "09283746875",
+//      selectRadioBtn,
+//      0,
+//      _district.districtId,
+//      0,
+//      0,
+//      _district.areaId,
+//      _district.name,
+//    );
+//    ApiTariff apiTariff = await futureApiTariff(currentUser.token, orderData.pickupAreaId, orderItemData.receiverAreaId);
+//    if(apiTariff.isSuccess()){
+//      orderItemData.receiverEstimationValue = apiTariff.getTariff(orderItemData.goodSizeId);
+//      return orderItemData;
+//    }
+//    return null;
+//  }
 }

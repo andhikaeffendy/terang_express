@@ -12,6 +12,7 @@ class OrderItem{
   int receiverSuDistrictId;
   double receiverEstimationValue;
   int receiverAreaId;
+  String receiverDistrictName;
 
   OrderItem(
       this.dropLatitude,
@@ -25,6 +26,7 @@ class OrderItem{
       this.receiverSuDistrictId,
       this.receiverEstimationValue,
       this.receiverAreaId,
+      this.receiverDistrictName,
       );
 
   OrderItem.emptyOrder() :
@@ -55,4 +57,12 @@ class OrderItem{
   };
 
   String toStringJson() => json.encode(toJson());
+
+  String getGoodSizeName(){
+    switch(goodSizeId){
+      case 1 : return "small";
+      case 2 : return "medium";
+      case 3 : return "large";
+    }
+  }
 }
