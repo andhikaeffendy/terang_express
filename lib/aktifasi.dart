@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:terang_express/globals/variable.dart';
 import 'package:terang_express/login.dart';
 
 class Aktifasi extends StatefulWidget {
@@ -46,12 +47,7 @@ class _AktifasiState extends State<Aktifasi> {
                       child: FlatButton(
                         color: Colors.white,
                         padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Login()),
-                          );
-                        },
+                        onPressed: () => startNewPage(context, Login()),
                         child: Text(
                           'Sign In',
                           style: TextStyle(

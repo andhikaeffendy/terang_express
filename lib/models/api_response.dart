@@ -10,8 +10,8 @@ class ApiResponse {
   });
 
   ApiResponse.fromJson(Map<String, dynamic> json) :
-        status = json["status"],
-        message = json["message"];
+        status = json["status"] ?? "",
+        message = json["message"] ?? "";
 
   ApiResponse.fromStringJson(String stringJson) :
         this.fromJson(json.decode(stringJson));

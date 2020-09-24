@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:terang_express/apis/api_change_password.dart';
+import 'package:terang_express/globals/variable.dart';
 
 class EditPassword extends StatefulWidget {
   @override
@@ -6,6 +8,10 @@ class EditPassword extends StatefulWidget {
 }
 
 class _EditPasswordState extends State<EditPassword> {
+  final oldPasswordController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final newPasswordConfirmationController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +42,8 @@ class _EditPasswordState extends State<EditPassword> {
                   accentColor: Color(0xFFa20000),
                   hintColor: Color(0xFFa20000)),
               child: new TextField(
+                controller: oldPasswordController,
+                obscureText: true,
                 decoration: new InputDecoration(
                     focusedBorder: OutlineInputBorder(
                       borderSide:
@@ -64,6 +72,8 @@ class _EditPasswordState extends State<EditPassword> {
                   accentColor: Color(0xFFa20000),
                   hintColor: Color(0xFFa20000)),
               child: new TextField(
+                controller: newPasswordController,
+                obscureText: true,
                 decoration: new InputDecoration(
                     focusedBorder: OutlineInputBorder(
                       borderSide:
@@ -92,6 +102,8 @@ class _EditPasswordState extends State<EditPassword> {
                   accentColor: Color(0xFFa20000),
                   hintColor: Color(0xFFa20000)),
               child: new TextField(
+                controller: newPasswordConfirmationController,
+                obscureText: true,
                 decoration: new InputDecoration(
                     focusedBorder: OutlineInputBorder(
                       borderSide:
@@ -121,7 +133,17 @@ class _EditPasswordState extends State<EditPassword> {
                 color: Color(0xFFa20000),
                 padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
                 onPressed: () {
-                  Navigator.pop(context);
+                  showCircular(context);
+                  futureApiChangePassword(currentUser.token, oldPasswordController.text,
+                      newPasswordController.text, newPasswordConfirmationController.text)
+                      .then((value){
+                        closeCircular(context);
+                        if(value.isSuccess()){
+                          alertDialogOK(context, "Success", value.message)
+                              .then((value) => Navigator.of(context).pop());
+                        } else alertDialogOK(context, "Error", value.message);
+
+                  });
                 },
                 child: Text(
                   'Ganti Password',

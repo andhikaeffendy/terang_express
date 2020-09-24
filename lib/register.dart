@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:terang_express/apis/api_company_types.dart';
+import 'package:terang_express/apis/api_register.dart';
+import 'package:terang_express/globals/variable.dart';
+import 'package:terang_express/models/company_type.dart';
 
 import 'aktifasi.dart';
 
@@ -9,10 +13,26 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  int _value = 1;
+  String selectedGender = "M";
+  int selectedCompanyTypeId = 0;
 
-  String _valPerusahaan;
-  List _listPerusahaan = ["PT Mulia Sejahtera", "PT Kebun Anggrek", 'PT Kabut Biru', 'PT Sayuran Segar'];
+  List<CompanyType> companyTypes;
+  Future<ApiCompanyType> _future;
+
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final passwordConfirmationController = TextEditingController();
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final companyController = TextEditingController();
+  final emailController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _future = futureApiCompanyTypes();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +64,7 @@ class _RegisterState extends State<Register> {
                         accentColor: Colors.white,
                         hintColor: Colors.white),
                     child: new TextField(
+                      controller: nameController,
                       decoration: new InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderSide:
@@ -74,6 +95,7 @@ class _RegisterState extends State<Register> {
                         accentColor: Colors.white,
                         hintColor: Colors.white),
                     child: new TextField(
+                      controller: phoneController,
                       decoration: new InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderSide:
@@ -110,14 +132,14 @@ class _RegisterState extends State<Register> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Radio(
-                        value: 0,
-                        groupValue: _value,
+                        value: "M",
+                        groupValue: selectedGender,
                         activeColor: Colors.white,
                         hoverColor: Colors.white,
                         focusColor: Colors.white,
                         onChanged: (T) {
                           setState(() {
-                            _value = T;
+                            selectedGender = "M";
                           });
                         },
                       ),
@@ -129,14 +151,14 @@ class _RegisterState extends State<Register> {
                         width: 16.0,
                       ),
                       Radio(
-                        value: 1,
-                        groupValue: _value,
+                        value: "F",
+                        groupValue: selectedGender,
                         activeColor: Colors.white,
                         hoverColor: Colors.white,
                         focusColor: Colors.white,
                         onChanged: (T) {
                           setState(() {
-                            _value = T;
+                            selectedGender = "F";
                           });
                         },
                       ),
@@ -155,6 +177,7 @@ class _RegisterState extends State<Register> {
                         accentColor: Colors.white,
                         hintColor: Colors.white),
                     child: new TextField(
+                      controller: companyController,
                       decoration: new InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderSide:
@@ -182,21 +205,31 @@ class _RegisterState extends State<Register> {
                   Container(
                     color: Colors.white,
                     padding: EdgeInsets.only(left: 16.0, right: 16.0),
-                    child: DropdownButton(
-                      hint: Text("Pilih Tipe Perusahaan"),
-                      isExpanded: true,
-                      value: _valPerusahaan,
-                      items: _listPerusahaan.map((value) {
-                        return DropdownMenuItem(
-                          child: Text(value),
-                          value: value,
+                    child: FutureBuilder(
+                      future: _future,
+                      builder: (context, snapshot){
+                        companyTypes = new List();
+                        companyTypes.add(CompanyType(0,"-- Pilih Tipe Perusahaan -- ",""));
+                        if(snapshot.hasData){
+                          ApiCompanyType apiCompanyType = snapshot.data;
+                          companyTypes.addAll(apiCompanyType.companyTypes);
+                        }
+                        return DropdownButton(
+                          hint: Text("Pilih Tipe Perusahaan"),
+                          isExpanded: true,
+                          value: selectedCompanyTypeId,
+                          items: companyTypes.map((value) {
+                            return DropdownMenuItem(
+                              child: Text(value.name),
+                              value: value.id,
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedCompanyTypeId = value;
+                            });
+                          },
                         );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _valPerusahaan =
-                              value; //Untuk memberitahu _valGender bahwa isi nya akan diubah sesuai dengan value yang kita pilih
-                        });
                       },
                     ),
                   ),
@@ -209,6 +242,7 @@ class _RegisterState extends State<Register> {
                         accentColor: Colors.white,
                         hintColor: Colors.white),
                     child: new TextField(
+                      controller: usernameController,
                       decoration: new InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderSide:
@@ -239,6 +273,7 @@ class _RegisterState extends State<Register> {
                         accentColor: Colors.white,
                         hintColor: Colors.white),
                     child: new TextField(
+                      controller: emailController,
                       decoration: new InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderSide:
@@ -269,6 +304,8 @@ class _RegisterState extends State<Register> {
                         accentColor: Colors.white,
                         hintColor: Colors.white),
                     child: new TextField(
+                      controller: passwordController,
+                      obscureText: true,
                       decoration: new InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderSide:
@@ -299,6 +336,8 @@ class _RegisterState extends State<Register> {
                         accentColor: Colors.white,
                         hintColor: Colors.white),
                     child: new TextField(
+                      controller: passwordConfirmationController,
+                      obscureText: true,
                       decoration: new InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderSide:
@@ -329,10 +368,16 @@ class _RegisterState extends State<Register> {
                       color: Colors.white,
                       padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Aktifasi()),
-                        );
+                        showCircular(context);
+                        futureApiRegister(usernameController.text, nameController.text,
+                            emailController.text, passwordController.text,
+                            passwordConfirmationController.text, phoneController.text,
+                            selectedGender, companyController.text, selectedCompanyTypeId).then((value){
+                            closeCircular(context);
+                            if(value.isSuccess()){
+                              startNewPage(context, Aktifasi());
+                            } else alertDialogOK(context, "Error", value.message);
+                            });
                       },
                       child: Text(
                         'Sign Up',

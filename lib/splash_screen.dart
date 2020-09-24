@@ -5,6 +5,7 @@ import 'package:terang_express/globals/variable.dart';
 import 'package:terang_express/home.dart';
 import 'package:terang_express/introduction_screen.dart';
 import 'package:terang_express/login.dart';
+import 'package:terang_express/main.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -26,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   checkSession() async {
     await delay(3);
-    startNewPage(context, await loadSession() ? Home() : await skipIntro() ? Login() : IntroScreen());
+    startNewPage(context, await loadSession() ? MyApp() : await skipIntro() ? Login() : IntroScreen());
   }
 
   @override

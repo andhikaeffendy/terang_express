@@ -14,7 +14,15 @@ class Profil extends StatefulWidget {
 }
 
 class _ProfilState extends State<Profil> {
-  Profile profile = new Profile("-", "-", "-", "-", "-", "-", "-");
+  Future<Profile> _future;
+  Profile profile;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _future = futureApiProfile(currentUser.token);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +88,7 @@ class _ProfilState extends State<Profil> {
                             bottomRight: Radius.circular(25.0)),
                       ),
                       child: FutureBuilder(
-                        future: futureApiProfile(currentUser.token),
+                        future: _future,
                         builder: (context, future){
                           if(future.connectionState == ConnectionState.done){
                             profile = future.data;
@@ -99,12 +107,7 @@ class _ProfilState extends State<Profil> {
                       child: FlatButton(
                         color: Color(0xFFa20000),
                         padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => EditPassword()),
-                          );
-                        },
+                        onPressed: () => nextPage(context, EditPassword()),
                         child: Text(
                           'Edit Password',
                           style: TextStyle(
